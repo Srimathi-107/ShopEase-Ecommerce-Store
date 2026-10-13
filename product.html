@@ -1,0 +1,484 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Product Details | ShopEase</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet"
+  >
+</head>
+
+<body class="bg-body-tertiary">
+
+  <!-- Navbar -->
+  <nav class="navbar bg-white shadow-sm sticky-top">
+    <div class="container py-2">
+
+      <a href="index.html" class="navbar-brand fw-bold fs-3">
+        Shop<span class="text-primary">Ease.</span>
+      </a>
+
+      <a
+        href="index.html"
+        class="btn btn-outline-primary rounded-pill px-3"
+      >
+        <i class="bi bi-arrow-left me-1"></i>
+        Back to Products
+      </a>
+
+    </div>
+  </nav>
+
+  <!-- Product Details -->
+  <main class="container py-5">
+
+    <div id="product-details" class="row justify-content-center">
+
+      <div class="col-12 text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-secondary mt-3">Loading product details...</p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-top py-4 mt-4">
+    <div class="container text-center">
+      <p class="text-secondary small mb-1">
+        © 2026 ShopEase. All rights reserved.
+      </p>
+      <p class="text-secondary small mb-0">
+        Your one-stop destination for online shopping.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    let fetchparam = new URLSearchParams(window.location.search);
+    let id = fetchparam.get("id");
+
+    if (!id) {
+      document.getElementById("product-details").innerHTML = `
+        <div class="col-12 col-md-8 col-lg-6">
+          <div class="alert alert-warning text-center rounded-4">
+            Product ID is missing.
+          </div>
+          <div class="text-center">
+            <a href="index.html" class="btn btn-primary rounded-pill">
+              Back to Products
+            </a>
+          </div>
+        </div>
+      `;
+    } else {
+      fetch(`https://dummyjson.com/products/${id}`)
+        .then((r) => {
+          if (!r.ok) {
+            throw new Error("Product not found");
+          }
+          return r.json();
+        })
+        .then((r) => {
+
+          let container = document.getElementById("product-details");
+          container.innerHTML = "";
+
+          // Main column
+          let col = document.createElement("div");
+          col.className = "col-12 col-md-10 col-lg-8 col-xl-7";
+
+          // Main card
+          let div = document.createElement("div");
+          div.className = "card border-0 shadow rounded-4 p-3 p-md-4";
+
+          // Category badge
+          let categoryBadge = document.createElement("div");
+          categoryBadge.className = "text-center mb-3";
+
+          let categorySpan = document.createElement("span");
+          categorySpan.className =
+            "badge bg-primary-subtle text-primary rounded-pill px-3 py-2";
+          categorySpan.innerHTML = r.category;
+
+          categoryBadge.append(categorySpan);
+
+          // Product title
+          let h1 = document.createElement("h1");
+          h1.className = "fs-3 fw-bold text-center mb-3";
+          h1.innerHTML = r.title;
+
+          // Product image
+          let img = document.createElement("img");
+          img.src = r.thumbnail;
+          img.alt = r.title;
+          img.className =
+            "img-fluid rounded-4 mx-auto d-block mb-3";
+          img.style.width = "180px";
+          img.style.height = "180px";
+          img.style.objectFit = "contain";
+
+          // Product description
+          let desc = document.createElement("p");
+          desc.className =
+            "text-secondary text-center mb-3";
+          desc.innerHTML = r.description;
+
+          // Rating
+          let ratingBox = document.createElement("div");
+          ratingBox.className =
+            "d-flex justify-content-center align-items-center gap-2 mb-3";
+
+          let rating = document.createElement("span");
+          rating.className = "text-warning fw-bold";
+          rating.innerHTML = "★ " + r.rating;
+
+          let ratingText = document.createElement("span");
+          ratingText.className = "text-secondary small";
+          ratingText.innerHTML = "Customer Rating";
+
+          ratingBox.append(rating, ratingText);
+
+          // Price section
+          let priceBox = document.createElement("div");
+          priceBox.className =
+            "bg-body-tertiary rounded-4 text-center p-3 mb-4";
+
+          let priceLabel = document.createElement("p");
+          priceLabel.className =
+            "text-secondary small mb-1";
+          priceLabel.innerHTML = "Price";
+
+          let price = document.createElement("h2");
+          price.className =
+            "fs-2 fw-bold text-success mb-2";
+          price.innerHTML = "$" + r.price;
+
+          let discount = document.createElement("span");
+          discount.className =
+            "badge bg-success-subtle text-success rounded-pill";
+          discount.innerHTML =
+            r.discountPercentage + "% OFF";
+
+          priceBox.append(priceLabel, price, discount);
+
+          // Product information heading
+          let infoTitle = document.createElement("h5");
+          infoTitle.className =
+            "fw-bold border-bottom pb-2 mb-3";
+          infoTitle.innerHTML =
+            '<i class="bi bi-info-circle text-primary me-2"></i>Product Information';
+
+          // Product information grid
+          let infoBox = document.createElement("div");
+          infoBox.className = "row g-3 mb-4";
+
+          function createInfo(label, value, icon) {
+            let item = document.createElement("div");
+            item.className = "col-6 col-md-6";
+
+            let card = document.createElement("div");
+            card.className =
+              "bg-body-tertiary rounded-3 p-3 h-100";
+
+            let labelText = document.createElement("p");
+            labelText.className =
+              "text-secondary small mb-1";
+            labelText.innerHTML =
+              '<i class="bi ' + icon + ' me-1"></i>' + label;
+
+            let valueText = document.createElement("p");
+            valueText.className =
+              "fw-semibold mb-0 text-break";
+            valueText.innerHTML = value ?? "N/A";
+
+            card.append(labelText, valueText);
+            item.append(card);
+
+            return item;
+          }
+
+          infoBox.append(
+            createInfo("Brand", r.brand || "N/A", "bi-tag"),
+            createInfo("Stock", r.stock, "bi-box-seam"),
+            createInfo("Weight", r.weight, "bi-speedometer2"),
+            createInfo("SKU", r.sku, "bi-upc"),
+            createInfo(
+              "Availability",
+              r.availabilityStatus,
+              "bi-check-circle"
+            ),
+            createInfo(
+              "Minimum Order",
+              r.minimumOrderQuantity,
+              "bi-cart"
+            )
+          );
+
+          // Tags section
+          let tagTitle = document.createElement("h5");
+          tagTitle.className =
+            "fw-bold border-bottom pb-2 mb-3";
+          tagTitle.innerHTML =
+            '<i class="bi bi-tags text-primary me-2"></i>Product Tags';
+
+          let tagBox = document.createElement("div");
+          tagBox.className =
+            "d-flex flex-wrap gap-2 mb-4";
+
+          (r.tags || []).forEach((tag) => {
+            let badge = document.createElement("span");
+            badge.className =
+              "badge bg-primary-subtle text-primary rounded-pill px-3 py-2";
+            badge.innerHTML = tag;
+            tagBox.append(badge);
+          });
+
+          // Dimensions
+          let dimensionTitle = document.createElement("h5");
+          dimensionTitle.className =
+            "fw-bold border-bottom pb-2 mb-3";
+          dimensionTitle.innerHTML =
+            '<i class="bi bi-rulers text-primary me-2"></i>Dimensions';
+
+          let dimensionBox = document.createElement("div");
+          dimensionBox.className =
+            "row g-3 mb-4";
+
+          dimensionBox.append(
+            createInfo("Width", r.dimensions.width, "bi-arrows"),
+            createInfo("Height", r.dimensions.height, "bi-arrows-vertical"),
+            createInfo("Depth", r.dimensions.depth, "bi-box")
+          );
+
+          // Shipping and warranty
+          let shippingTitle = document.createElement("h5");
+          shippingTitle.className =
+            "fw-bold border-bottom pb-2 mb-3";
+          shippingTitle.innerHTML =
+            '<i class="bi bi-truck text-primary me-2"></i>Shipping & Returns';
+
+          let shippingBox = document.createElement("div");
+          shippingBox.className =
+            "bg-body-tertiary rounded-3 p-3 mb-4";
+
+          let warranty = document.createElement("p");
+          warranty.className = "small mb-3";
+          warranty.innerHTML =
+            "<strong>Warranty:</strong> " + r.warrantyInformation;
+
+          let shipping = document.createElement("p");
+          shipping.className = "small mb-3";
+          shipping.innerHTML =
+            "<strong>Shipping:</strong> " + r.shippingInformation;
+
+          let returnPolicy = document.createElement("p");
+          returnPolicy.className = "small mb-0";
+          returnPolicy.innerHTML =
+            "<strong>Return Policy:</strong> " + r.returnPolicy;
+
+          shippingBox.append(warranty, shipping, returnPolicy);
+
+          // Customer reviews
+          let reviewTitle = document.createElement("h5");
+          reviewTitle.className =
+            "fw-bold border-bottom pb-2 mb-3";
+          reviewTitle.innerHTML =
+            '<i class="bi bi-chat-square-text text-primary me-2"></i>Customer Reviews';
+
+          let reviews = document.createElement("div");
+          reviews.className =
+            "d-flex flex-column gap-3 mb-4";
+
+          (r.reviews || []).forEach((review) => {
+            let reviewCard = document.createElement("div");
+            reviewCard.className =
+              "card border-0 bg-body-tertiary rounded-3 p-3";
+
+            let reviewHeader = document.createElement("div");
+            reviewHeader.className =
+              "d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2";
+
+            let reviewerName = document.createElement("p");
+            reviewerName.className = "fw-bold mb-0";
+            reviewerName.innerHTML =
+              '<i class="bi bi-person-circle text-primary me-2"></i>' +
+              review.reviewerName;
+
+            let reviewRating = document.createElement("span");
+            reviewRating.className =
+              "badge bg-warning-subtle text-warning-emphasis rounded-pill";
+            reviewRating.innerHTML =
+              "★ " + review.rating + " / 5";
+
+            reviewHeader.append(reviewerName, reviewRating);
+
+            let comment = document.createElement("p");
+            comment.className = "small mb-2";
+            comment.innerHTML = review.comment;
+
+            let reviewDate = document.createElement("p");
+            reviewDate.className =
+              "text-secondary small mb-1";
+            reviewDate.innerHTML =
+              '<i class="bi bi-calendar3 me-2"></i>' + review.date;
+
+            let reviewerEmail = document.createElement("p");
+            reviewerEmail.className =
+              "text-secondary small mb-0 text-break";
+            reviewerEmail.innerHTML =
+              '<i class="bi bi-envelope me-2"></i>' +
+              review.reviewerEmail;
+
+            reviewCard.append(
+              reviewHeader,
+              comment,
+              reviewDate,
+              reviewerEmail
+            );
+
+            reviews.append(reviewCard);
+          });
+
+          // Product images
+          let imageTitle = document.createElement("h5");
+          imageTitle.className =
+            "fw-bold border-bottom pb-2 mb-3";
+          imageTitle.innerHTML =
+            '<i class="bi bi-images text-primary me-2"></i>Product Images';
+
+          let imageLinks = document.createElement("div");
+          imageLinks.className =
+            "d-flex flex-wrap gap-2 mb-4";
+
+          (r.images || []).forEach((imageUrl, index) => {
+            let imageLink = document.createElement("a");
+            imageLink.href = imageUrl;
+            imageLink.target = "_blank";
+            imageLink.rel = "noopener noreferrer";
+            imageLink.className =
+              "btn btn-outline-primary btn-sm rounded-pill";
+            imageLink.innerHTML =
+              '<i class="bi bi-image me-1"></i> Image ' +
+              (index + 1);
+
+            imageLinks.append(imageLink);
+          });
+
+          // Additional information
+          let additionalTitle = document.createElement("h5");
+          additionalTitle.className =
+            "fw-bold border-bottom pb-2 mb-3";
+          additionalTitle.innerHTML =
+            '<i class="bi bi-card-list text-primary me-2"></i>Additional Information';
+
+          let additionalBox = document.createElement("div");
+          additionalBox.className =
+            "bg-body-tertiary rounded-3 p-3 mb-3";
+
+          let createdAt = document.createElement("p");
+          createdAt.className = "small mb-2";
+          createdAt.innerHTML =
+            "<strong>Created At:</strong> " + r.meta.createdAt;
+
+          let updatedAt = document.createElement("p");
+          updatedAt.className = "small mb-2";
+          updatedAt.innerHTML =
+            "<strong>Updated At:</strong> " + r.meta.updatedAt;
+
+          let barcode = document.createElement("p");
+          barcode.className = "small mb-3";
+          barcode.innerHTML =
+            "<strong>Barcode:</strong> " + r.meta.barcode;
+
+          let qrLabel = document.createElement("p");
+          qrLabel.className = "small fw-bold text-center";
+          qrLabel.innerHTML = "Product QR Code";
+
+          let qrCode = document.createElement("img");
+          qrCode.src = r.meta.qrCode;
+          qrCode.alt = "Product QR Code";
+          qrCode.className =
+            "img-fluid d-block mx-auto";
+          qrCode.style.width = "110px";
+          qrCode.style.height = "110px";
+
+          additionalBox.append(
+            createdAt,
+            updatedAt,
+            barcode,
+            qrLabel,
+            qrCode
+          );
+
+          // Back button
+          let backBox = document.createElement("div");
+          backBox.className = "text-center mt-4";
+
+          let backButton = document.createElement("a");
+          backButton.href = "index.html";
+          backButton.className =
+            "btn btn-primary rounded-pill px-4 py-2";
+          backButton.innerHTML =
+            '<i class="bi bi-arrow-left me-2"></i>Continue Shopping';
+
+          backBox.append(backButton);
+
+          // Append everything
+          div.append(
+            categoryBadge,
+            h1,
+            img,
+            desc,
+            ratingBox,
+            priceBox,
+            infoTitle,
+            infoBox,
+            tagTitle,
+            tagBox,
+            dimensionTitle,
+            dimensionBox,
+            shippingTitle,
+            shippingBox,
+            reviewTitle,
+            reviews,
+            imageTitle,
+            imageLinks,
+            additionalTitle,
+            additionalBox,
+            backBox
+          );
+
+          col.append(div);
+          container.append(col);
+        })
+        .catch((error) => {
+          document.getElementById("product-details").innerHTML = `
+            <div class="col-12 col-md-8 col-lg-6">
+              <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <i class="bi bi-exclamation-circle text-danger display-4 mb-3"></i>
+                <h4 class="fw-bold">Product Not Found</h4>
+                <p class="text-secondary">${error.message}</p>
+                <a href="index.html" class="btn btn-primary rounded-pill">
+                  Back to Products
+                </a>
+              </div>
+            </div>
+          `;
+        });
+    }
+  </script>
+
+</body>
+</html>
